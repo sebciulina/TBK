@@ -1,0 +1,34 @@
+version: "3.9"
+services:
+  todo-web:
+    image: diamol/ch06-todo-list
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      - Database:Provider=Postgres
+    depends_on:
+      - todo-db
+    networks:
+      - app-net
+    secrets:
+      - source: postgres-connection
+        target: /app/config/secrets.json
+    volumes:
+      - var/lib/postgresql/data
+
+  todo-db:
+    image: diamol/postgres:11.5
+    ports:
+      - "5433:5432"
+    networks:
+      - app-net
+    volumes:
+      - var/lib/postgresql/data
+
+networks:
+  app-net:
+
+secrets:
+  postgres-connection:
+    file: ./config/secrets.json

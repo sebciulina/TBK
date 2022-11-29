@@ -1,0 +1,39 @@
+version: "3.9"
+services:
+  todo-db-test:
+    image: diamol/postgres:11.5
+    restart: unless-stopped
+    ports:
+      - "${TODO_DB_PORT_TEST}:5432"
+    networks:
+      - app-net
+    volumes:
+      - ${PGDATA_TEST}:/var/lib/postgresql/data
+
+  todo-web:
+    image: ${TODO_PROJECT_IMAGE_LATEST} 
+    restart: unless-stopped
+    ports:
+      - "${TODO_WEB_PORT_TEST}:80"
+    environment:
+      - Database:Provider=Postgres
+    depends_on:
+      - todo-db-test
+    networks:
+      - app-net
+    secrets:
+      - source: postgres-connection
+        target: /app/config/secrets.json
+    volumes:
+      - ${PGDATA_TEST}:/var/lib/postgresql/data
+
+networks:
+  app-net:
+
+secrets:
+  postgres-connection:
+    file: ./config/secrets.json
+
+volumes:
+  pg-data-test:
+    name: pg-data-test
