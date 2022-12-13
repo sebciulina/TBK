@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  api:
+    image: diamol/ch04-image-of-the-day
+    ports:
+      - "8080:80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/image"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 10s  
+    deploy:
+      replicas: 4
+      update_config:
+        parallelism: 2
+        delay: 10s
+        failure_action: rollback
+      rollback_config:
+        parallelism: 2
+        delay: 10s
+
+  gallery:
+    image: diamol/ch04-image-gallery
+    ports:
+      - 80:80
+
+  access_log:
+    image: diamol/ch04-access-log
