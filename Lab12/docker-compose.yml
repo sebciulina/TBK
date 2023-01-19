@@ -1,0 +1,24 @@
+services:
+  numbers-api:
+    image: diamol/ch14-numbers-api:v5
+    environment:
+      - Broken=false
+      - Logging__LogLevel__Default=Debug
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: "numbers.{{.Service}}.{{.ImageName}}"
+    networks:
+      - app-net
+  numbers-web:
+    image: diamol/ch14-numbers-web:v5
+    ports:
+      - 8090:80
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: "numbers.{{.Service}}.{{.ImageName}}"
+    networks:
+      - app-net
